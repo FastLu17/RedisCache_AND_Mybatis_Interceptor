@@ -22,6 +22,7 @@ import java.util.UUID;
 @Component
 @Aspect
 public class CacheAspect {
+    // 无法通过AOP拦截 非Spring Bean 对象的方法、
     @Pointcut("execution(public * org.springframework.cache.annotation.SpringCacheAnnotationParser.parseCacheAnnotations(..))")
     public void pointCut() {
     }
