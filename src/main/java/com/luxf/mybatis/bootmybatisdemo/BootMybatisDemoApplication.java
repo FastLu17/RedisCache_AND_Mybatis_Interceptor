@@ -28,6 +28,13 @@ public class BootMybatisDemoApplication {
     @Autowired
     private ApplicationContext applicationContext;
 
+    /**
+     *  该接口下的实现类有个"attributeCache"属性、用于缓存 CacheOperation--> @Cacheable,@CachePut等具体属于、
+     *  private final Map<Object, Collection<CacheOperation>> attributeCache = new ConcurrentHashMap<>(1024);
+     *  如果再已经加载完后还想重新加载、则需要利用反射 获取此Map、重新PUSH。
+     *  getCacheOperations()的源码中, 已存在的Key直接返回,没有进行覆盖、因此需要反射处理
+     * @return
+     */
     @Bean
     @Lazy
     public CacheOperationSource cacheOperationSource() {
