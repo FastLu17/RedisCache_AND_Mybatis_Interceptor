@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.AnnotationCacheOperationSource;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.interceptor.AbstractFallbackCacheOperationSource;
 import org.springframework.cache.interceptor.CacheOperationSource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +14,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 
 import javax.annotation.PostConstruct;
+import java.lang.reflect.Method;
 
+/**
+ * @author 小66
+ */
 @SpringBootApplication
 @EnableCaching
 public class BootMybatisDemoApplication {
@@ -29,10 +34,13 @@ public class BootMybatisDemoApplication {
     private ApplicationContext applicationContext;
 
     /**
-     *  该接口下的实现类有个"attributeCache"属性、用于缓存 CacheOperation--> @Cacheable,@CachePut等具体属于、
-     *  private final Map<Object, Collection<CacheOperation>> attributeCache = new ConcurrentHashMap<>(1024);
-     *  如果再已经加载完后还想重新加载、则需要利用反射 获取此Map、重新PUSH。
-     *  getCacheOperations()的源码中, 已存在的Key直接返回,没有进行覆盖、因此需要反射处理
+     * 该接口下的实现类有个"attributeCache"属性{@link AbstractFallbackCacheOperationSource#attributeCache}、用于缓存 CacheOperation--> @Cacheable,@CachePut等具体属于、
+     * 如果再已经加载完后还想重新加载、则需要利用反射 获取此Map、重新push。
+     * 利用反射时,需要先反射调用 {@link AbstractFallbackCacheOperationSource#computeCacheOperations(Method method, Class targetClass)}方法、
+     * 获取最新的Collection<CacheOperation>, 然后push。
+     * getCacheOperations()的源码中, 已存在的Key直接返回,没有进行覆盖、因此需要反射处理
+     * 也可以主动优先加载需要动态生成的@Cacheable,@CachePut等注解、
+     *
      * @return
      */
     @Bean

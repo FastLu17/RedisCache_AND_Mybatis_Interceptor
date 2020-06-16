@@ -101,6 +101,7 @@ public class ApplicationContextHelper implements ApplicationContextAware, BeanPo
                         try {
                             memberValues = handler.getClass().getDeclaredField("memberValues");
                             memberValues.setAccessible(true);
+                            @SuppressWarnings("unchecked")
                             Map<String, Object> map = (Map<String, Object>) memberValues.get(handler);
                             String[] values = {tableName};
                             map.put("value", values);
@@ -135,13 +136,18 @@ public class ApplicationContextHelper implements ApplicationContextAware, BeanPo
         };
     }
 
+    /**
+     * 正常情况,接口上不推荐有注解,抽象类可以有注解、只获取父类(父类的父类..)的方法就行
+     * @param clazz clazz
+     * @param methodAnnotationClass 方法上的注解
+     */
     @SafeVarargs
-    private final List<Method> getSupperMethods(Class clazz, Class<? extends Annotation>... annotationClass) {
+    private final List<Method> getSupperMethods(Class clazz, Class<? extends Annotation>... methodAnnotationClass) {
         List<Class<?>> allInterfaces = getAllInterfaces(clazz);
         List<Method> methodList = new ArrayList<>();
         allInterfaces.parallelStream().forEach(aClass -> {
             List<Method> methods = Stream.of(aClass.getMethods())
-                    .filter(method -> Stream.of(annotationClass).anyMatch(method::isAnnotationPresent))
+                    .filter(method -> Stream.of(methodAnnotationClass).anyMatch(method::isAnnotationPresent))
                     .collect(Collectors.toList());
             methodList.addAll(methods);
         });
