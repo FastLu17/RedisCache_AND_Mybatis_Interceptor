@@ -3,8 +3,11 @@ package com.luxf.mybatis.bootmybatisdemo.entity;
 import javax.persistence.Table;
 import java.io.Serializable;
 
+/**
+ * @author sunway
+ */
 @Table(name = "USER")
-public class User extends BaseInfo<Integer> implements Serializable {
+public class User extends BaseInfo<Integer> {
     private Integer id;
     private String userName;
     private String passWord;

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luxf.mybatis.bootmybatisdemo.mapper.SecurityUserMapper">
+    <select id="findUserByUserName" parameterType="string"
+            resultType="com.luxf.mybatis.bootmybatisdemo.entity.SecurityUser">
+        select *
+        from s_user
+        where username = #{userName}
+    </select>
+    <select id="findRolesByUserName" resultType="com.luxf.mybatis.bootmybatisdemo.entity.SecurityRole">
+        SELECT r.*
+        FROM s_user u,
+             s_role r,
+             s_user_role ur
+        WHERE u.id = ur.user_id
+          AND r.id = ur.role_id
+          AND u.userName = #{userName}
+    </select>
+</mapper>
