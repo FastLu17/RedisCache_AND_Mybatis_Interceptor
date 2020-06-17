@@ -40,16 +40,17 @@ public class CacheAspect {
             String tableName = table.name();
 
             // 动态修改注解参数、 改了不生效、容器初始化完成后,spring就已经把Cacheable注解的属性提前解析、
-            Cacheable cacheable = Cacheable.class.newInstance();
-            InvocationHandler handler = Proxy.getInvocationHandler(cacheable);
-            Field memberValues = handler.getClass().getDeclaredField("memberValues");
-            memberValues.setAccessible(true);
-            Map<String, Object> map = (Map<String, Object>) memberValues.get(handler);
-            map.put("value", tableName);
-            //AOP拦到的方法参数的值
-            String UID = UUID.randomUUID().toString().toUpperCase().replaceAll("-", "");
-            Object[] args = pjp.getArgs();
-            map.put("key", "REDIS_" + tableName + "_" + args[0]);
+            if (clazz.isAnnotationPresent(Cacheable.class)) {
+                Cacheable cacheable = clazz.getAnnotation(Cacheable.class);
+                InvocationHandler handler = Proxy.getInvocationHandler(cacheable);
+                Field memberValues = handler.getClass().getDeclaredField("memberValues");
+                memberValues.setAccessible(true);
+                Map<String, Object> map = (Map<String, Object>) memberValues.get(handler);
+                map.put("value", tableName);
+                //AOP拦到的方法参数的值
+                Object[] args = pjp.getArgs();
+                map.put("key", "REDIS_" + tableName + "_" + args[0]);
+            }
         }
         Object obj;
         try {
