@@ -15,6 +15,8 @@ import java.util.List;
 /**
  * WebMvcConfiguration的配置类、
  *
+ * 在这个configration类上面增加@EnableWebMvc注解，这样就会屏蔽掉springboot默认的mvc配置，但是不推荐.
+ * 这样就会屏蔽掉其他的默认配置，比如ExceptionHandlerExceptionResolver等
  * @author 小66
  * @date 2020-06-17 10:21
  **/
