@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
  * @date 2020-06-16 14:56
  **/
 @Service
-public class GenericClassTypeService implements BaseService<StudentInfo, Integer> {
+public class GenericClassTypeService extends AbstractDaoImpl<StudentInfo, Integer> {
     @Override
     public StudentInfo findInfoById(Integer id) {
         return null;

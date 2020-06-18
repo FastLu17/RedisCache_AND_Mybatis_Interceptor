@@ -58,4 +58,15 @@ public class SecurityUser extends BaseInfo<Integer> {
     public void setComment(String comment) {
         this.comment = comment;
     }
+
+    @Override
+    public String toString() {
+        return "SecurityUser{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", psw='" + psw + '\'' +
+                ", available='" + available + '\'' +
+                ", comment='" + comment + '\'' +
+                '}';
+    }
 }

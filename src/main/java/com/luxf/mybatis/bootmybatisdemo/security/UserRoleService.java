@@ -3,6 +3,7 @@ package com.luxf.mybatis.bootmybatisdemo.security;
 import com.luxf.mybatis.bootmybatisdemo.entity.SecurityRole;
 import com.luxf.mybatis.bootmybatisdemo.entity.SecurityUser;
 import com.luxf.mybatis.bootmybatisdemo.mapper.SecurityUserMapper;
+import com.luxf.mybatis.bootmybatisdemo.service.AbstractDaoImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ import java.util.List;
  * @date 2020-06-17 21:17
  **/
 @Service
-public class UserRoleService {
+public class UserRoleService extends AbstractDaoImpl<SecurityUser, Integer> {
     private final SecurityUserMapper userMapper;
 
     @Autowired
@@ -36,6 +37,5 @@ public class UserRoleService {
     @Cacheable(value = "SECURITY_ROLE", key = "#userName")
     public List<SecurityRole> getRolesByUserName(String userName) {
         return userMapper.findRolesByUserName(userName);
-
     }
 }

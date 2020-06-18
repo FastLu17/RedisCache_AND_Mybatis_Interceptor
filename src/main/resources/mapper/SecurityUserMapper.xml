@@ -16,4 +16,9 @@
           AND r.id = ur.role_id
           AND u.userName = #{userName}
     </select>
+    <select id="selectSecurityUserById" resultType="com.luxf.mybatis.bootmybatisdemo.entity.SecurityUser">
+        select *
+        from s_user
+        where id = #{id}
+    </select>
 </mapper>

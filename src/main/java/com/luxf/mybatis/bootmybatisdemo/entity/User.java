@@ -7,7 +7,7 @@ import java.io.Serializable;
  * @author sunway
  */
 @Table(name = "USER")
-public class User extends BaseInfo<Integer> {
+public class User extends BaseInfo<Integer> implements Serializable {
     private Integer id;
     private String userName;
     private String passWord;

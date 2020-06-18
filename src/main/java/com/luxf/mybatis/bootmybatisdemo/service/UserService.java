@@ -4,36 +4,28 @@ import com.luxf.mybatis.bootmybatisdemo.entity.User;
 import com.luxf.mybatis.bootmybatisdemo.helper.ApplicationContextHelper;
 import com.luxf.mybatis.bootmybatisdemo.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.interceptor.CacheOperation;
 import org.springframework.cache.interceptor.CacheOperationSource;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.Table;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @Author:小66
- * @Date: 2018/9/26 0026
- * @Time: 15:23
+ * 正常情况每个Service都需要实现AbstractDaoImpl、
+ * @author 小66
  */
 @Service
-public class UserService implements BaseService<User, Integer> {
+public class UserService extends AbstractDaoImpl<User, Integer> {
     @Autowired
     private UserMapper userMapper;
-//
-//    @Autowired
-//    private CacheOperationSource operationSource;
 
+    @NonNull
     public User selectUserById(int id) {
         Map<String, Object> map = new HashMap<>(1);
         map.put("id", id);
@@ -82,15 +74,8 @@ public class UserService implements BaseService<User, Integer> {
     }
 
     @Override
-    @Cacheable(value = "USER_INFO")
+    //@Cacheable(value = "USER_INFO")
     public User findInfoById(Integer id) {
-        CacheOperationSource source = ApplicationContextHelper.getBean(CacheOperationSource.class);
-        try {
-            Collection<CacheOperation> operations = source.getCacheOperations(this.getClass().getMethod("findInfoById", Integer.class), this.getClass());
-            System.out.println("operations.size() = " + operations.size());
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
         return userMapper.selectUserById(new HashMap<>(), id);
     }
 }

@@ -1,8 +1,10 @@
 package com.luxf.mybatis.bootmybatisdemo.controller;
 
+import com.luxf.mybatis.bootmybatisdemo.entity.SecurityUser;
 import com.luxf.mybatis.bootmybatisdemo.entity.User;
 import com.luxf.mybatis.bootmybatisdemo.helper.ApplicationContextHelper;
 import com.luxf.mybatis.bootmybatisdemo.mapper.UserMapper;
+import com.luxf.mybatis.bootmybatisdemo.security.UserRoleService;
 import com.luxf.mybatis.bootmybatisdemo.service.UserBatchService;
 import com.luxf.mybatis.bootmybatisdemo.service.UserService;
 import org.apache.ibatis.mapping.ResultMap;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 public class UserController {
@@ -27,6 +30,9 @@ public class UserController {
 
     @Autowired
     private UserBatchService batchService;
+
+    @Autowired
+    private UserRoleService userRoleService;
 
     @RequestMapping("user/{id}")
     public String selectUserById(@PathVariable int id) {
@@ -60,6 +66,19 @@ public class UserController {
 
     @RequestMapping("/findInfoById")
     public void findInfoById() {
-        userService.findInfoById(3);
+        User infoById = userService.findInfoById(3);
+        System.out.println("infoById = " + infoById);
+    }
+
+    @RequestMapping("/findSecurityInfoById")
+    public void findSecurityInfoById() {
+        SecurityUser infoById = userRoleService.findInfoById(1);
+        System.out.println("infoById = " + infoById);
+    }
+
+    @RequestMapping("/findAll")
+    public void findAll() {
+        List<User> userList = userService.findAll();
+        System.out.println("userList = " + userList);
     }
 }

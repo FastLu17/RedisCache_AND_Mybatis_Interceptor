@@ -20,4 +20,6 @@ public interface SecurityUserMapper {
     SecurityUser findUserByUserName(String userName);
 
     List<SecurityRole> findRolesByUserName(String userName);
+
+    SecurityUser selectSecurityUserById(Integer id);
 }

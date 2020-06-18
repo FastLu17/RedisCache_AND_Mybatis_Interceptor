@@ -4,6 +4,7 @@ import com.luxf.mybatis.bootmybatisdemo.entity.BaseInfo;
 import org.springframework.core.ResolvableType;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * BaseDao层、
@@ -19,11 +20,15 @@ public interface BaseService<T extends BaseInfo<I>, I extends Serializable> {
 
     /**
      * Spring 不推荐 在接口上添加注解、因此多写一层抽象类
+     * 因为接口上的注解, 无法被实现类继承！
+     * <B>重写</B> 和 <B>实现</B> 父类(父接口)的方法, Override都会导致 子类无法继承父类注解！
      *
      * @param id
      * @return
      */
     T findInfoById(I id);
+
+    List<T> findAll();
 
     /**
      * 获取泛型的具体类型、

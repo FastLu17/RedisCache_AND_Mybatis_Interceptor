@@ -8,6 +8,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 import java.util.List;
@@ -51,5 +52,9 @@ public class ApplicationMvcConfiguration extends WebMvcConfigurationSupport {
         super.addArgumentResolvers(argumentResolvers);
     }
 
-
+    @Override
+    protected void addInterceptors(InterceptorRegistry registry) {
+        // TODO: 此处添加的Interceptor是Spring Mvc Interceptor、 不是Spring Interceptor.
+        // registry.addInterceptor();
+    }
 }
