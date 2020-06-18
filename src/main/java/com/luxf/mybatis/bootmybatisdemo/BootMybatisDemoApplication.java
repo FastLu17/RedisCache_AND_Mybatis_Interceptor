@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.AnnotationCacheOperationSource;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.annotation.ProxyCachingConfiguration;
 import org.springframework.cache.interceptor.AbstractFallbackCacheOperationSource;
 import org.springframework.cache.interceptor.CacheOperationSource;
 import org.springframework.context.ApplicationContext;
@@ -41,6 +42,7 @@ public class BootMybatisDemoApplication {
      * getCacheOperations()的源码中, 已存在的Key直接返回,没有进行覆盖、因此需要反射处理
      * 也可以主动优先加载需要动态生成的@Cacheable,@CachePut等注解、
      *
+     * 不需要手动注入该Bean、Spring底层已经配置过、see{@link ProxyCachingConfiguration#cacheOperationSource()}
      * @return
      */
     @Bean
