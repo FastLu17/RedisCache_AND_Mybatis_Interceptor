@@ -88,9 +88,9 @@ public class ApplicationContextHelper implements ApplicationContextAware, BeanPo
             }
             try {
                 Class<?> clazz = Class.forName(className);
-                processCacheable(clazz);
                 // TODO: 按需实现即可, 三个方法内部可以抽取公共部分, 暂不处理
-                // processCachePut(clazz);
+                processCacheable(clazz);
+                processCachePut(clazz);
                 // processCacheEvict(clazz);
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -109,26 +109,8 @@ public class ApplicationContextHelper implements ApplicationContextAware, BeanPo
         Class<Cacheable> cacheClass = Cacheable.class;
         List<Method> methods = getSupperClassMethods(clazz, cacheClass);
         for (Method method : methods) {
-            // 获取泛型AbstractDaoImpl<T,I>中 T 的具体类型、
-            Class<?> genericType = ResolvableType.forClass(clazz).as(AbstractDaoImpl.class).getGeneric(0).resolve();
-            // T findInfoById(I id); 泛型的返回值--> BaseInfo.class,而不是具体的UserInfo.class
-            Class<?> returnType = method.getReturnType();
-            assert genericType != null;
-            if (genericType.isAnnotationPresent(Table.class) && returnType.isAssignableFrom(genericType)) {
-                Table table = genericType.getAnnotation(Table.class);
-                String tableName = table.name();
-                Cacheable cacheable = method.getAnnotation(cacheClass);
-
-                // 动态修改注解参数、
-                InvocationHandler handler = Proxy.getInvocationHandler(cacheable);
-                Field memberValues = handler.getClass().getDeclaredField("memberValues");
-                memberValues.setAccessible(true);
-                @SuppressWarnings("unchecked")
-                Map<String, Object> map = (Map<String, Object>) memberValues.get(handler);
-                String[] values = {tableName};
-                map.put("value", values);
-                map.put("cacheNames", values);
-
+            Map<String, Object> map = getMemberValues(clazz, cacheClass, method);
+            if (map != null) {
                 // 赋值key时, 需要使用SPEL表达式, 与注解上赋值key的语法相同、
                 // TODO: key的赋值方式应该根据接口的不同,有所区别、--> findById(Integer id);
                 map.put("key", "#id");
@@ -136,6 +118,31 @@ public class ApplicationContextHelper implements ApplicationContextAware, BeanPo
                 cacheOperationSource.getCacheOperations(method, clazz);
             }
         }
+    }
+
+    private Map<String, Object> getMemberValues(Class<?> clazz, Class<? extends Annotation> cacheClass, Method method) throws NoSuchFieldException, IllegalAccessException {
+        // 获取泛型AbstractDaoImpl<T,I>中 T 的具体类型、
+        Class<?> genericType = ResolvableType.forClass(clazz).as(AbstractDaoImpl.class).getGeneric(0).resolve();
+        // T findInfoById(I id); 泛型的返回值--> BaseInfo.class,而不是具体的UserInfo.class
+        Class<?> returnType = method.getReturnType();
+        assert genericType != null;
+        if (genericType.isAnnotationPresent(Table.class) && returnType.isAssignableFrom(genericType)) {
+            Table table = genericType.getAnnotation(Table.class);
+            String tableName = table.name();
+
+            // 动态修改注解参数、
+            Annotation cacheable = method.getAnnotation(cacheClass);
+            InvocationHandler handler = Proxy.getInvocationHandler(cacheable);
+            Field memberValues = handler.getClass().getDeclaredField("memberValues");
+            memberValues.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = (Map<String, Object>) memberValues.get(handler);
+            String[] values = {tableName};
+            map.put("value", values);
+            map.put("cacheNames", values);
+            return map;
+        }
+        return null;
     }
 
     /**
@@ -149,26 +156,8 @@ public class ApplicationContextHelper implements ApplicationContextAware, BeanPo
         Class<CachePut> cacheClass = CachePut.class;
         List<Method> methods = getSupperClassMethods(clazz, cacheClass);
         for (Method method : methods) {
-            // 获取泛型AbstractDaoImpl<T,I>中 T 的具体类型、
-            Class<?> genericType = ResolvableType.forClass(clazz).as(AbstractDaoImpl.class).getGeneric(0).resolve();
-            // T insertInfo(T info); 泛型的返回值--> BaseInfo.class,而不是具体的UserInfo.class
-            Class<?> returnType = method.getReturnType();
-            assert genericType != null;
-            if (genericType.isAnnotationPresent(Table.class) && returnType.isAssignableFrom(genericType)) {
-                Table table = genericType.getAnnotation(Table.class);
-                String tableName = table.name();
-                CachePut cacheable = method.getAnnotation(cacheClass);
-
-                // 动态修改注解参数、
-                InvocationHandler handler = Proxy.getInvocationHandler(cacheable);
-                Field memberValues = handler.getClass().getDeclaredField("memberValues");
-                memberValues.setAccessible(true);
-                @SuppressWarnings("unchecked")
-                Map<String, Object> map = (Map<String, Object>) memberValues.get(handler);
-                String[] values = {tableName};
-                map.put("value", values);
-                map.put("cacheNames", values);
-
+            Map<String, Object> map = getMemberValues(clazz, cacheClass, method);
+            if (map != null) {
                 // 赋值key时, 需要使用SPEL表达式, 与注解上赋值key的语法相同、
                 // TODO: key的赋值方式应该根据接口的不同,有所区别、-->T insertInfo(T info);
                 map.put("key", "#result.id");

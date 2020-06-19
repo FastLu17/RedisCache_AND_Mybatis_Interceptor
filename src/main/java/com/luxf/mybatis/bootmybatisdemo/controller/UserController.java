@@ -1,5 +1,6 @@
 package com.luxf.mybatis.bootmybatisdemo.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.luxf.mybatis.bootmybatisdemo.entity.SecurityUser;
 import com.luxf.mybatis.bootmybatisdemo.entity.User;
 import com.luxf.mybatis.bootmybatisdemo.helper.ApplicationContextHelper;
@@ -10,14 +11,12 @@ import com.luxf.mybatis.bootmybatisdemo.service.UserService;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @RestController
 public class UserController {
@@ -80,5 +79,23 @@ public class UserController {
     public void findAll() {
         List<User> userList = userService.findAll();
         System.out.println("userList = " + userList);
+    }
+
+    @RequestMapping("/insertUser")
+    public void insertUser() {
+        User info = new User();
+        info.setUserName("HUAWEI");
+        info.setPassWord("123456");
+        User user = userService.insertEntity(info);
+        System.out.println("user = " + user);
+    }
+
+    @GetMapping("/findInfoListByCond")
+    public String findInfoListByCond() {
+        Map<String, Object> cond = new HashMap<>(2);
+        cond.put("passWord", "123456");
+        cond.put("realName", null);
+        List<User> entityListByCond = userService.findEntityListByCond(cond, "userName", "ID");
+        return JSONObject.toJSONString(entityListByCond);
     }
 }

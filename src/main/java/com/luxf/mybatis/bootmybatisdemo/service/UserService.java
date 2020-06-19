@@ -1,23 +1,20 @@
 package com.luxf.mybatis.bootmybatisdemo.service;
 
 import com.luxf.mybatis.bootmybatisdemo.entity.User;
-import com.luxf.mybatis.bootmybatisdemo.helper.ApplicationContextHelper;
 import com.luxf.mybatis.bootmybatisdemo.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.interceptor.CacheOperation;
-import org.springframework.cache.interceptor.CacheOperationSource;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * 正常情况每个Service都需要实现AbstractDaoImpl、
+ *
  * @author 小66
  */
 @Service
@@ -77,5 +74,11 @@ public class UserService extends AbstractDaoImpl<User, Integer> {
     //@Cacheable(value = "USER_INFO")
     public User findInfoById(Integer id) {
         return userMapper.selectUserById(new HashMap<>(), id);
+    }
+
+    @Override
+    public User insertEntity(User info) {
+        info.setRealName("REAL_NAME");
+        return super.insertEntity(info);
     }
 }

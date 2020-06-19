@@ -1,14 +1,15 @@
 package com.luxf.mybatis.bootmybatisdemo.service;
 
 import com.luxf.mybatis.bootmybatisdemo.entity.User;
-import com.luxf.mybatis.bootmybatisdemo.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
 
 /**
  * @author 小66
@@ -18,18 +19,40 @@ import java.util.HashMap;
 public class RedisCacheUserService {
 
     @Autowired
-    private UserMapper userMapper;
+    private UserService userService;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Transactional(rollbackFor = Exception.class)
     // @CachePut(value = "redisCache", key = "'redis_user'+#user.id")
     @CachePut(value = "redisCache", key = "'redis_user'+#result.id")
     public User insertUser(User user) {
-        userMapper.insertUser(user);
+        userService.insertEntity(user);
         return user;
     }
 
     @Cacheable(value = "redisCache", key = "'redis_user'+#id")
     public User findById(Integer id) {
-        return userMapper.selectUserById(new HashMap<>(), id);
+        return userService.findInfoById(id);
+    }
+
+    @Transactional
+    public Object getRedisTemplateExecuteResult(String key, int idx) {
+
+        Object obj = redisTemplate.execute(new SessionCallback() {
+            @Override
+            public Object execute(RedisOperations operations) throws DataAccessException {
+                Object before = operations.opsForValue().get(key);
+                System.out.println("before = " + before);
+                operations.watch(key);
+                operations.multi();
+                operations.opsForValue().increment(key, 1);
+                Object after = operations.opsForValue().get(key);
+                System.out.println("after = " + after);
+                return operations.exec();
+            }
+        });
+        return obj;
     }
 }
