@@ -12,7 +12,7 @@ import java.util.Map;
  */
 @Repository
 @Mapper
-public interface UserMapper {
+public interface UserMapper extends GenericMapper<Integer> {
 
     User selectUserById(Map<String, Object> map, Integer id);
 

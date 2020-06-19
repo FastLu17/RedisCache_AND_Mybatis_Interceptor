@@ -9,6 +9,12 @@
         <result column="realName" jdbcType="VARCHAR" property="realName"/>
     </resultMap>
 
+    <select id="selectByCond" parameterType="hashmap" resultType="hashmap">
+        select *
+        from user
+        where id = #{id}
+    </select>
+
     <select id="selectUserById" parameterType="hashmap" resultType="com.luxf.mybatis.bootmybatisdemo.entity.User">
         select *
         from user

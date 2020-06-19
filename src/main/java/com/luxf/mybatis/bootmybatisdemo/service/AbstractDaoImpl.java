@@ -1,13 +1,20 @@
 package com.luxf.mybatis.bootmybatisdemo.service;
 
 import com.luxf.mybatis.bootmybatisdemo.entity.BaseInfo;
+import com.luxf.mybatis.bootmybatisdemo.entity.EntityContextInstance;
+import com.luxf.mybatis.bootmybatisdemo.helper.IdWorker;
 import com.luxf.mybatis.bootmybatisdemo.helper.PersistenceHelper;
 import com.luxf.mybatis.bootmybatisdemo.mapper.AbstractMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.lang.Nullable;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +28,7 @@ public abstract class AbstractDaoImpl<T extends BaseInfo<I>, I extends Serializa
     @Autowired
     private AbstractMapper abstractMapper;
 
-    @Cacheable("ABSTRACT_INFO")
+    @Cacheable("ABSTRACT_FIND_INFO")
     @Override
     public T findInfoById(I id) {
         Class<T> type = getType();
@@ -46,5 +53,28 @@ public abstract class AbstractDaoImpl<T extends BaseInfo<I>, I extends Serializa
             return PersistenceHelper.mapListToEntity(mapList, type);
         }
         throw new RuntimeException("数据异常！");
+    }
+
+    @Override
+    public List<T> findEntityListByCond(Map<String, Object> cond, @Nullable String... resultColumnList) {
+        Class<T> type = getType();
+        EntityContextInstance instance = EntityContextInstance.of(type, cond);
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> mapList = abstractMapper.findEntityListByCond(instance,
+                resultColumnList == null ? null : Arrays.asList(resultColumnList));
+        return PersistenceHelper.mapListToEntity(mapList, type);
+    }
+
+    @CachePut(value = "ABSTRACT_INSERT_INFO")
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+    public T insertEntity(T info) {
+        I id = info.getId();
+        if (id == null) {
+            info.setId(IdWorker.nextId(getIdType()));
+        }
+        EntityContextInstance contextInstance = EntityContextInstance.of(info);
+        abstractMapper.insertEntity(contextInstance);
+        return info;
     }
 }

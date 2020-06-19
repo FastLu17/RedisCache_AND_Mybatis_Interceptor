@@ -10,4 +10,60 @@
         select *
         from ${tableName}
     </select>
+    <select id="findEntityListByCond" resultType="java.util.Map">
+        <!-- 可以多定义一个List参数,指定具体要查询的column、-->
+        select
+        <choose>
+            <when test='resultColumnList != null and resultColumnList.size() > 0'>
+                <foreach collection="resultColumnList" item="resultColumn" separator=",">
+                    `${resultColumn.toUpperCase}`
+                </foreach>
+            </when>
+            <otherwise>
+                *
+            </otherwise>
+        </choose>
+        from ${contextInstance.tableName}
+        <where>
+            <foreach collection="contextInstance.condList" item="columnInstance" separator="AND">
+                <!-- 需要对时间类型比较进行相应 FORMAT 转换、-->
+                <choose>
+                    <when test='columnInstance.columnValue == null or columnInstance.columnValue.toString() == ""'>
+                        `${columnInstance.columnName.toUpperCase}` IS NULL
+                    </when>
+                    <otherwise>
+                        `${columnInstance.columnName.toUpperCase}` = #{columnInstance.columnValue}
+                    </otherwise>
+                </choose>
+            </foreach>
+        </where>
+    </select>
+
+    <insert id="insertEntity">
+        INSERT INTO ${contextInstance.tableName}
+        <foreach collection="contextInstance.fieldList" item="columnInstance" open="(" close=")" separator=",">
+            `${columnInstance.columnName.toUpperCase}`
+        </foreach>
+        VALUES
+        <foreach collection="contextInstance.fieldList" item="columnInstance" open="(" close=")" separator=",">
+            <choose>
+                <when test='columnInstance.columnValue == null or columnInstance.columnValue.toString() == ""'>
+                    NULL
+                </when>
+                <otherwise>
+                    <choose>
+                        <when test="columnInstance.columnJdbcType=='CLOB'">
+                            #{columnInstance.columnValue,jdbcType=CLOB}
+                        </when>
+                        <when test="columnInstance.columnJdbcType=='BLOB'">
+                            #{columnInstance.columnValue,jdbcType=BLOB}
+                        </when>
+                        <otherwise>
+                            #{columnInstance.columnValue}
+                        </otherwise>
+                    </choose>
+                </otherwise>
+            </choose>
+        </foreach>
+    </insert>
 </mapper>
