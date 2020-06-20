@@ -2,9 +2,12 @@ package com.luxf.mybatis.bootmybatisdemo.entity;
 
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
- * @author sunway
+ * @author 小66
  */
 @Table(name = "USER")
 public class User extends BaseInfo<Integer> implements Serializable {
@@ -12,6 +15,8 @@ public class User extends BaseInfo<Integer> implements Serializable {
     private String userName;
     private String passWord;
     private String realName;
+    private LocalDateTime createTime;
+    private LocalDate modifyTime;
 
     @Override
     public Integer getId() {
@@ -47,6 +52,22 @@ public class User extends BaseInfo<Integer> implements Serializable {
         this.realName = realName;
     }
 
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
+    public LocalDate getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(LocalDate modifyTime) {
+        this.modifyTime = modifyTime;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -54,6 +75,8 @@ public class User extends BaseInfo<Integer> implements Serializable {
                 ", userName='" + userName + '\'' +
                 ", passWord='" + passWord + '\'' +
                 ", realName='" + realName + '\'' +
+                ", createTime=" + createTime +
+                ", modifyTime=" + modifyTime +
                 '}';
     }
 }

@@ -37,7 +37,7 @@ public abstract class AbstractDaoImpl<T extends BaseInfo<I>, I extends Serializa
             String tableName = table.name();
             @SuppressWarnings("unchecked")
             Map<String, Object> infoByPrimaryKey = abstractMapper.findEntityByPrimaryKey(tableName, id);
-            return PersistenceHelper.mapToEntity(infoByPrimaryKey, type);
+            return PersistenceHelper.mapToPersistable(infoByPrimaryKey, type);
         }
         throw new RuntimeException("数据异常！");
     }

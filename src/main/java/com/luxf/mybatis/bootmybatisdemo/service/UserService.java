@@ -73,7 +73,7 @@ public class UserService extends AbstractDaoImpl<User, Integer> {
     @Override
     //@Cacheable(value = "USER_INFO")
     public User findInfoById(Integer id) {
-        return userMapper.selectUserById(new HashMap<>(), id);
+        return super.findInfoById(id);
     }
 
     @Override
