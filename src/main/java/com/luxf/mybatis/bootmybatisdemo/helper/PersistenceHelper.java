@@ -124,25 +124,22 @@ public class PersistenceHelper {
     }
 
     private static void registerLocalDateTimeConvert() {
-        ConvertUtils.register(LocalDateTimeConvert.of(), LocalDateTime.class);
+        ConvertUtils.register(LocalDateTimeConvert.CONVERT, LocalDateTime.class);
     }
 
     private static void registerLocalDateConvert() {
-        ConvertUtils.register(LocalDateTimeConvert.of(), LocalDate.class);
+        ConvertUtils.register(LocalDateTimeConvert.CONVERT, LocalDate.class);
     }
 
     private static void registerLocalTimeConvert() {
-        ConvertUtils.register(LocalDateTimeConvert.of(), LocalTime.class);
+        ConvertUtils.register(LocalDateTimeConvert.CONVERT, LocalTime.class);
     }
 
     /**
      * 内部类、实现{@link Converter}
-     * 可以自定义ConvertUtils, 实现{@link Converter}并继承{@link ConvertUtils}
      */
     public static class LocalDateTimeConvert implements Converter {
-        static LocalDateTimeConvert of() {
-            return new LocalDateTimeConvert();
-        }
+        static final LocalDateTimeConvert CONVERT = new LocalDateTimeConvert();
 
         @Override
         public <T> T convert(Class<T> aClass, Object o) {
