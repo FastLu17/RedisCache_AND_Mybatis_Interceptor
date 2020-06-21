@@ -85,6 +85,10 @@ public class MybatisInterceptor implements Interceptor {
                     value = metaObject.getValue(propertyName);
                   }
                 */
+            /**
+             * 利用反射功能, 拦截并更新BoundSql对象的 sql字段值, 为只查询数据结构的SQL、
+             */
+            //ReflectionUtils.setFieldValue(boundSql, "sql", "SELECT S.* FROM  + USER S WHERE 1 = 2");
         } else if (Executor.class.isAssignableFrom(target.getClass())) {//粗粒度校验、
             //如果需要细粒度的校验,则需要根据配置文件来判断即可、
             /*

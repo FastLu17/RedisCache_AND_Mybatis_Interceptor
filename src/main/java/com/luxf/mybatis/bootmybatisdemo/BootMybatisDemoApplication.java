@@ -18,6 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.lang.reflect.Method;
 
@@ -27,6 +28,7 @@ import java.lang.reflect.Method;
 @SpringBootApplication
 @EnableCaching
 @EnableAsync
+@EnableScheduling
 public class BootMybatisDemoApplication {
 
     public static void main(String[] args) {
