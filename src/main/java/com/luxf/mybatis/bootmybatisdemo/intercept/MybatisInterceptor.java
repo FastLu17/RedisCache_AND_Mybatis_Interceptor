@@ -49,6 +49,9 @@ public class MybatisInterceptor implements Interceptor {
     public Object intercept(Invocation invocation) throws Throwable {
         Object target = invocation.getTarget();
         if (target instanceof RoutingStatementHandler) {
+            /**
+             * {@link RoutingStatementHandler#delegate}字段的初始化时是{@link BaseStatementHandler}的三个子类之一、
+             */
             RoutingStatementHandler statementHandler = (RoutingStatementHandler) target;
             /*
               SimpleStatementHandler: 管理 Statement 对象并向数据库中推送不需要预编译的SQL语句、

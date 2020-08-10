@@ -24,9 +24,7 @@
         select id,username,realname,password
         from ${tableName}
         <where>
-            <if test="id != null">
-                and id = #{id}
-            </if>
+            <include refid="com.luxf.mybatis.bootmybatisdemo.mapper.AbstractMapper.idCondClause"/>
             <if test="userName != null">
                 and username =#{userName}
             </if>

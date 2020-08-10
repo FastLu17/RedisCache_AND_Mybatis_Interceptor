@@ -4,7 +4,9 @@
     <select id="findEntityByPrimaryKey" resultType="hashmap">
         select *
         from ${tableName}
-        where id = #{id}
+        <where>
+            <include refid="idCondClause"/>
+        </where>
     </select>
     <select id="findAll" resultType="java.util.Map">
         select *
@@ -66,4 +68,11 @@
             </choose>
         </foreach>
     </insert>
+
+    <!-- 测试源码解析 SQL Fragments、 -->
+    <sql id="idCondClause">
+        <if test="@com.luxf.mybatis.bootmybatisdemo.mapper.CustomOgnl@isNotEmpty(id)">
+            and id = #{id}
+        </if>
+    </sql>
 </mapper>

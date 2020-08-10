@@ -33,7 +33,9 @@ public class PersistenceHelper {
         return JSONObject.parseObject(JSON.toJSONString(entityMap), persistableClass);
     }
 
-    public static <T> List<T> mapListToEntity(List<Map<String, Object>> entityMap, Class<T> persistableClass) {
+    public static <T extends BaseInfo> List<T> mapListToEntity(List<Map<String, Object>> entityMap, Class<T> persistableClass) {
+        List<T> objectList = entityMap.stream().map(map -> mapToPersistable(map, persistableClass)).collect(Collectors.toList());
+        // 直接利用JSONObject将Map转换为实体类T、--> 这种方式无法处理不能映射的字段、
         return JSONObject.parseArray(JSON.toJSONString(entityMap), persistableClass);
     }
 
@@ -41,6 +43,9 @@ public class PersistenceHelper {
      * 将查询的数据结果Map中的数据赋值到指定的Bean中，如果没有对应的成员变量，赋值到Bean的extMap成员变量中
      */
     public static <T extends BaseInfo> T mapToPersistable(Map<String, Object> map, Class<T> persistableClass) {
+        // 直接利用JSONObject将Map转换为实体类T、--> 这种方式无法处理不能映射的字段、
+        T object = JSONObject.parseObject(JSON.toJSONString(map), persistableClass);
+
         if (map == null || map.isEmpty()) {
             return null;
         }
