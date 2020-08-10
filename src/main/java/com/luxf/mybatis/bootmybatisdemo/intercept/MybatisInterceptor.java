@@ -39,8 +39,8 @@ public class MybatisInterceptor implements Interceptor {
      * <p>
      * 进入这个intercept()方法之前, 在{@link org.apache.ibatis.plugin.Plugin#invoke(Object proxy, Method method, Object[] args)}方法中判断的、
      * <p>
-     * intercept()方法中的两个if判断的条件原因；
-     * 1、{@link RoutingStatementHandler#delegate}属性：处理器委托对象,是{@link BaseStatementHandler}的子类
+     * intercept()方法中的两个if判断的条件原因；(因为拦截了StatementHandler和Executor、因此需要进行判断)
+     * 1、{@link RoutingStatementHandler#delegate}属性：处理器委托对象,是由{@link BaseStatementHandler}的子类构建生成的。
      * 2、{@link CachingExecutor#delegate}属性：执行器委托对象,是{@link org.apache.ibatis.executor.BaseExecutor}的子类,可以配置 mybatis.configuration.default-executor-type=simple 指定委托执行器、
      *
      * @param invocation 拦截器对象
