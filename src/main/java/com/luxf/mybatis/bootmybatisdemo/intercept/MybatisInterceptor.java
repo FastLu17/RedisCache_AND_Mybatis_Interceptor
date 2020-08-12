@@ -43,6 +43,14 @@ public class MybatisInterceptor implements Interceptor {
      * 1、{@link RoutingStatementHandler#delegate}属性：处理器委托对象,是由{@link BaseStatementHandler}的子类构建生成的。
      * 2、{@link CachingExecutor#delegate}属性：执行器委托对象,是{@link org.apache.ibatis.executor.BaseExecutor}的子类,可以配置 mybatis.configuration.default-executor-type=simple 指定委托执行器、
      *
+     *  1、mybatis拦截器默认只能拦截四种类型 Executor、StatementHandler、ParameterHandler 和 ResultSetHandler
+     *  2、代理的目标对象就是我们要拦截对象。举例说明：
+     *      比如我们要拦截 {@link Executor#update(MappedStatement ms, Object parameter)} 方法，
+     *      那么 Invocation 就是这个对象，Invocation 里面有三个参数 target method args
+     *      target 就是 Executor
+     *      method 就是 update
+     *      args   就是 MappedStatement ms, Object parameter
+     *
      * @param invocation 拦截器对象
      */
     @Override
@@ -91,8 +99,8 @@ public class MybatisInterceptor implements Interceptor {
             /**
              * 利用反射功能, 拦截并更新BoundSql对象的 sql字段值, 为只查询数据结构的SQL、
              */
-            //ReflectionUtils.setFieldValue(boundSql, "sql", "SELECT S.* FROM  + USER S WHERE 1 = 2");
-        } else if (Executor.class.isAssignableFrom(target.getClass())) {//粗粒度校验、
+            //ReflectionUtils.setFieldValue(boundSql, "sql", "SELECT S.* FROM  USER S WHERE 1 = 2");
+        } else if (Executor.class.isAssignableFrom(target.getClass())) {
             //如果需要细粒度的校验,则需要根据配置文件来判断即可、
             /*
              * mybatis.configuration.default-executor-type=simple
